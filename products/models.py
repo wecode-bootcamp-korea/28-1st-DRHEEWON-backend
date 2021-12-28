@@ -1,7 +1,8 @@
 from django.db import models
 
 class Product(models.Model):
-    name              = models.CharField(max_length=50)
+    korean_name       = models.CharField(max_length=50)
+    english_name      = models.CharField(max_length=50)
     description       = models.CharField(max_length=1000)
     thumbnail_image   = models.CharField(max_length=1000)
     country_of_origin = models.CharField(max_length=50)
