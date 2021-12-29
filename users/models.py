@@ -1,4 +1,5 @@
-from django.db                   import models
+from django.db import models
+
 from dr_martens.time_stamp_model import TimeStampModel
 
 class User(TimeStampModel):

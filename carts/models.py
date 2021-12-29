@@ -1,5 +1,5 @@
-from django.db                   import models
-from django.db.models.deletion   import CASCADE
+from django.db import models
+
 from users.models                import User
 from products.models             import ProductOption
 from dr_martens.time_stamp_model import TimeStampModel
