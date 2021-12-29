@@ -14,7 +14,7 @@ class OrderStatus(models.Model):
 
 class Order(TimeStampModel):
     user         = models.ForeignKey(User, on_delete=CASCADE)
-    order_number = models.UUIDField(default=uuid.uuid4, editable=False)
+    order_number = models.UUIDField(default=uuid.uuid4)
     order_status = models.ForeignKey(OrderStatus, on_delete=CASCADE)
 
     class Meta:
