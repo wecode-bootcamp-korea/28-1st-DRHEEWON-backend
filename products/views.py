@@ -9,7 +9,7 @@ from products.models        import (Product,
                                     ProductImage,
                                     ProductOption)
 
-class DetailView(View):
+class ProductDetailView(View):
     @login_check
     def get(self, request, *args, **kwargs):
         try:
@@ -19,41 +19,41 @@ class DetailView(View):
             material          = product.material
             country_of_origin = product.country_of_origin
 
-            product_images    = ProductImage.objects.filter(product=product)
-            product_options   = ProductOption.objects.filter(product=product)
-            
+            product_options   = product.productoption_set.all()
+            product_images    = product.productimage_set.all()
             price = product_options[0].price
     
-            colors = []
-            sizes_stocks = []
-            for product_option in product_options:
-                colors.append(product_option.color.color)
-                sizes_stocks.append(
-                    {
-                        "size":product_option.size.name,
-                        "quantity":product_option.stock
-                    }        
-                )
-
+            colors = [
+                product_option.color.color 
+                for product_option in product_options
+            ]
             colors = list(set(colors))
-             
-            img_urls = []
-            for product_image in product_images:
-                img_urls.append(product_image.url)
 
-            result = {
-                "result":{
-                    "id":product_id,
-                    "productName": product_name,
-                    "imageUrls": img_urls,
-                    "country": country_of_origin,
-                    "material": material,
-                    "centerSize": sizes_stocks,
-                    "centerColor": colors,
-                    "price": price,
+            sizes_stocks = [
+                {
+                    "size":product_option.size.name,
+                    "quantity":product_option.stock
                 }
+                for product_option in product_options
+            ]
+             
+            img_urls = [
+                product_image.url
+                for product_image in product_images
+            ]
+
+            result ={
+                "id":product_id,
+                "productName": product_name,
+                "imageUrls": img_urls,
+                "country": country_of_origin,
+                "material": material,
+                "centerSize": sizes_stocks,
+                "centerColor": colors,
+                "price": price,
             }
-            return JsonResponse({"message":"success","result":result}, status=200)
+            
+            return JsonResponse({"result":result}, status=200)
 
         except KeyError as e:
             return JsonResponse({"message":getattr(e,"message",str(e))},status=400)
