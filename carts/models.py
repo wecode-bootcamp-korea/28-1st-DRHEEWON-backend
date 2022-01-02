@@ -5,8 +5,8 @@ from products.models             import ProductOption
 from dr_martens.time_stamp_model import TimeStampModel
 
 class Cart(TimeStampModel):
-    user            = models.ForeignKey(User, on_delete=CASCADE)
-    product_option  = models.ForeignKey(ProductOption, on_delete=CASCADE)
+    user            = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_option  = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
     quantity        = models.IntegerField()
 
     class Meta:
