@@ -42,7 +42,7 @@ class ProductDetailView(View):
                 for product_image in product_images
             ]
 
-            result ={
+            result = {
                 "id":product_id,
                 "productName": product_name,
                 "imageUrls": img_urls,
