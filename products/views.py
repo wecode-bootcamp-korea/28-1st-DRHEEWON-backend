@@ -34,8 +34,8 @@ class ProductDetailView(View):
              
             img_urls = [product_image.url for product_image in product_images]
 
-            result ={
-                "id"         : product_id,
+            result = {
+                "id": product_id,
                 "productName": product_name,
                 "imageUrls"  : img_urls,
                 "country"    : country_of_origin,
