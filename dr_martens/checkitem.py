@@ -4,9 +4,7 @@ import datetime
 from django.http import JsonResponse
 from django.conf import settings
 
-
 class CheckItem:
-
     def check_keys_in_body(check_dict:dict, necessary_key_list:list):
 
         check_dict_keys = check_dict.keys()
