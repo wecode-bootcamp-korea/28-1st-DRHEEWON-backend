@@ -1,10 +1,10 @@
 import json
-import datetime
 import bcrypt
 from django.http.response import HttpResponse, HttpResponseRedirect
 
 from django.http      import JsonResponse
 from django.views     import View
+
 from users.models     import User
 from users.validators import confirm_email, confirm_password
 
@@ -12,6 +12,7 @@ class SignUpView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+
             if not confirm_email(data['email']):
                 return JsonResponse({'message' : 'impossible email'}, status=400)
             
