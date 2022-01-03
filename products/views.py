@@ -20,7 +20,7 @@ class ProductDetailView(View):
 
             product_options   = product.productoption_set.all()
             product_images    = product.productimage_set.all()
-            price = product_options[0].price
+            price             = product_options[0].price
     
             color_query_set = product_options.values_list("color__color").distinct()
             colors          = [color for color in color_query_set]
@@ -35,7 +35,7 @@ class ProductDetailView(View):
             img_urls = [product_image.url for product_image in product_images]
 
             result = {
-                "id": product_id,
+                "id"         : product_id,
                 "productName": product_name,
                 "imageUrls"  : img_urls,
                 "country"    : country_of_origin,
