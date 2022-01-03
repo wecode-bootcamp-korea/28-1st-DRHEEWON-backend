@@ -8,7 +8,7 @@ class Product(models.Model):
     country_of_origin = models.CharField(max_length=50)
     material          = models.CharField(max_length=50)
     launched_at       = models.DateTimeField()
-
+ 
     class Meta:
         db_table = "products"
 
@@ -31,12 +31,26 @@ class Color(models.Model):
     class Meta:
         db_table = "colors"
 
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = "categories"
+
+class Subcategory(models.Model):
+    name     = models.CharField(max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "subcategories"
+
 class ProductOption(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    size    = models.ForeignKey(Size, on_delete=models.CASCADE)
-    color   = models.ForeignKey(Color, on_delete=models.CASCADE)
-    price   = models.DecimalField(max_digits=30, decimal_places=5)
-    stock   = models.IntegerField()
+    product      = models.ForeignKey(Product, on_delete=models.CASCADE)
+    size         = models.ForeignKey(Size, on_delete=models.CASCADE)
+    color        = models.ForeignKey(Color, on_delete=models.CASCADE)
+    subcategory  = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
+    price        = models.DecimalField(max_digits=30, decimal_places=5)
+    stock        = models.IntegerField()
 
     class Meta:
         db_table = "product_options"

@@ -9,6 +9,8 @@ class User(TimeStampModel):
     mobile_number = models.CharField(max_length=30)
     email         = models.CharField(max_length=50)
     point         = models.IntegerField()
+    birthday      = models.DateTimeField()
+    gender        = models.IntegerField()
 
     class Meta:
         db_table = "users"
