@@ -55,32 +55,75 @@ class ProductDetailView(View):
         except Product.DoesNotExist:
             return JsonResponse({"message":"Product does not found"}, status=404)
 
-class ListView(View):
+class ProductListView(View):
     def get(self, request, *args, **kwargs):
+        try:
+            category    = request.GET.get("category", None)
+            subcategory = request.GET.get("subcatagory",None)
+            min_price   = request.GET.get("min_price", None)
+            max_price   = request.GET.get("max_price", None)
+            colors      = request.GET.get("colors", None)
+            sizes       = request.GET.get("sizes", None)
+            order       = request.GET.get("order", None)
+            limit       = int(request.GET.get("limit",8))
+            offset      = int(request.GET.get("offset",0))
 
-        min_price = request.GET.get("min_price", None)
-        max_price = request.GET.get("max_price", None)
-        colors    = request.GET.get("colors", None)
-        sizes     = request.GET.get("sizes", None)
-        order     = request.GET.get("order", None)
-        print(type(order))
-        query_string = Q(stock__gt=0)
-        if(min_price):
-            query_string &= Q(price__gte=min_price)
-        if(max_price):
-            query_string &= Q(price__lte=max_price)
-        if(colors):
-            query_string &= Q(color__color__in=colors.split("."))
-        if(sizes):
-            query_string &= Q(size__name__in=sizes.split(","))
+            query_string = Q(stock__gt=0)
+            if(min_price):
+                query_string &= Q(price__gte=min_price)
+            if(max_price):
+                query_string &= Q(price__lte=max_price)
+            if(category):
+                query_string &= Q(subcategory__category__name=category)
+            if(subcategory):
+                query_string &= Q(subcategory__name=subcategory)
 
-        products = ProductOption.objects.filter(query_string)
+            if(colors):
+                colors=colors.split(",")
+                local_query_string=Q()
+                for color in colors:
+                    local_query_string |= Q(color__color=color) 
+                query_string &= (local_query_string)
 
-        if order: 
-            if "launch" in order:
-                order = "-product__launched_at"
-            products = products.order_by(order)
+            if(sizes):
+                sizes=sizes.split(",")
+                local_query_string=Q()
+                for size in sizes:
+                    local_query_string |= Q(size__name=size)
+                query_string &= (local_query_string)
 
-        for i in products:
-            print(i.product.korean_name, i.size.name, i.color.color, i.price, i.stock, i.product.launched_at)
-        return JsonResponse({"message":"success"}, status=200)
+            product_options = ProductOption.objects.filter(query_string)
+            if order: 
+                if "launch" in order:
+                   order = "-product__launched_at"
+                product_options = product_options.order_by(order)
+ 
+            result           = []
+            duplication_list = []
+            count            = offset
+            for product_option in product_options:
+                korean_name     = product_option.product.korean_name
+                price           = product_option.price
+                color           = product_option.color.color
+                thumbnail_image = product_option.product.thumbnail_image
+                product_id      = product_option.product.id
+
+                if not [product_id, color] in duplication_list:
+                    duplication_list.append([product_id, color])
+                    result.append(
+                        {
+                            "koreanName"    : korean_name,
+                            "price"         : price,
+                            "color"         : color,
+                            "thumbnailImage": thumbnail_image,
+                            "id"            : product_id
+                        }
+                    )
+                    count += 1
+                    if count >= limit+offset:
+                        break
+
+            return JsonResponse({"result":result}, status=200)
+
+        except ValueError as e:
+            return JsonResponse({"message":"limit or offset is not number"}, status=404)
