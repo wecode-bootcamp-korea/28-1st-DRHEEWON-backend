@@ -10,7 +10,6 @@ from products.models        import (Product,
                                     ProductOption)
 
 class ProductDetailView(View):
-    @login_check
     def get(self, request, *args, **kwargs):
         try:
             product           = Product.objects.get(id=kwargs["product_id"])
@@ -23,34 +22,27 @@ class ProductDetailView(View):
             product_images    = product.productimage_set.all()
             price = product_options[0].price
     
-            colors = [
-                product_option.color.color 
-                for product_option in product_options
-            ]
-            colors = list(set(colors))
+            color_query_set = product_options.values_list("color__color").distinct()
+            colors          = [color for color in color_query_set]
 
             sizes_stocks = [
                 {
-                    "size":product_option.size.name,
-                    "quantity":product_option.stock
-                }
-                for product_option in product_options
+                    "size"    : product_option.size.name,
+                    "quantity": product_option.stock
+                }for product_option in product_options
             ]
              
-            img_urls = [
-                product_image.url
-                for product_image in product_images
-            ]
+            img_urls = [product_image.url for product_image in product_images]
 
             result ={
-                "id":product_id,
+                "id"         : product_id,
                 "productName": product_name,
-                "imageUrls": img_urls,
-                "country": country_of_origin,
-                "material": material,
-                "centerSize": sizes_stocks,
+                "imageUrls"  : img_urls,
+                "country"    : country_of_origin,
+                "material"   : material,
+                "centerSize" : sizes_stocks,
                 "centerColor": colors,
-                "price": price,
+                "price"      : price,
             }
             
             return JsonResponse({"result":result}, status=200)

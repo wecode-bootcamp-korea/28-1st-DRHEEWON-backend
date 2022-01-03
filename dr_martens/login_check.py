@@ -28,8 +28,9 @@ def login_check(func):
                 user         = User.objects.get(id=payload.get('id'))
                 request.user = user
             else:
-                request.user      = None
-                request.client_ip = get_client_ip(request)
+                request.user = None
+
+            request.client_ip = get_client_ip(request)
 
             return func(self, request, *args, **kwargs)
 
