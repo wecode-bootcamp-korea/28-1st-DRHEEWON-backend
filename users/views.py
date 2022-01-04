@@ -26,21 +26,21 @@ class SignInView(View):
             valid_password = user.password.encode('utf-8')
 
             if not bcrypt.checkpw(password, valid_password):
-                return JsonResponse({'message':'INVALID_USER'}, status=401)
+                return JsonResponse({'message':'INVALID_USER','status':401}, status=401)
 
-            exp_date     = datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+            exp_date     = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
             access_token = jwt.encode(
                     {'id':user.id, 'exp':exp_date},
                     settings.SECRET_KEY,
                     algorithm=settings.ALGORITHM,
             )
-            return JsonResponse({'message':'success','token':access_token}, status=200)
+            return JsonResponse({'message':'success','status':200,'token':access_token}, status=200)
 
         except KeyError as e:
             return JsonResponse({'message':getattr(e,'message',str(e))}, status=400)
 
         except User.DoesNotExist:
-            return JsonResponse({'message':'INVALID_USER'}, status=401)
+            return JsonResponse({'message':'INVALID_USER','status':401}, status=401)
             
 class SignUpView(View):
     def post(self, request):

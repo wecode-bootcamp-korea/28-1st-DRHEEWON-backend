@@ -4,8 +4,7 @@ from django.http  import JsonResponse
 from django.views import View
 
 from dr_martens.checkitem   import CheckItem
-from dr_martens.login_check import login_check
-from django.db.models       import Q
+from django.db.models       import Max, Q
 
 from products.models        import (Product,
                                     ProductImage,
@@ -60,70 +59,53 @@ class ProductListView(View):
         try:
             category    = request.GET.get("category", None)
             subcategory = request.GET.get("subcatagory",None)
-            min_price   = request.GET.get("min_price", None)
-            max_price   = request.GET.get("max_price", None)
+            min_price   = request.GET.get("min_price", 10000)
+            max_price   = request.GET.get("max_price", 500000)
             colors      = request.GET.get("colors", None)
             sizes       = request.GET.get("sizes", None)
-            order       = request.GET.get("order", None)
+            sort        = request.GET.get("sort", "id")
             limit       = int(request.GET.get("limit",8))
             offset      = int(request.GET.get("offset",0))
 
-            query_string = Q(stock__gt=0)
-            if(min_price):
-                query_string &= Q(price__gte=min_price)
-            if(max_price):
-                query_string &= Q(price__lte=max_price)
+            q  = Q(productoption__stock__gt=0)
+            q &= Q(productoption__price__gte=min_price)
+            q &= Q(productoption__price__lte=max_price)
+
             if(category):
-                query_string &= Q(subcategory__category__name=category)
+                q &= Q(productoption__subcategory__category__name=category)
+
             if(subcategory):
-                query_string &= Q(subcategory__name=subcategory)
+                q &= Q(productoption__subcategory__name=subcategory)
 
             if(colors):
-                colors=colors.split(",")
-                local_query_string=Q()
-                for color in colors:
-                    local_query_string |= Q(color__color=color) 
-                query_string &= (local_query_string)
+                colors = colors.split(",")
+                q     &= Q(productoption__color__color__in=colors)
 
             if(sizes):
-                sizes=sizes.split(",")
-                local_query_string=Q()
-                for size in sizes:
-                    local_query_string |= Q(size__name=size)
-                query_string &= (local_query_string)
+                sizes = sizes.split(",")
+                q    &= Q(productoption__size__name__in=sizes) 
 
-            product_options = ProductOption.objects.filter(query_string)
-            if order: 
-                if "launch" in order:
-                   order = "-product__launched_at"
-                product_options = product_options.order_by(order)
- 
-            result           = []
-            duplication_list = []
-            count            = offset
-            for product_option in product_options:
-                korean_name     = product_option.product.korean_name
-                price           = product_option.price
-                color           = product_option.color.color
-                thumbnail_image = product_option.product.thumbnail_image
-                product_id      = product_option.product.id
+            sort_set = {
+                "id"       : "id",
+                "price"    : "max_price",
+                "-price"   : "-max_price",
+                "launch"   : "-launched_at"
+            }
 
-                if not [product_id, color] in duplication_list:
-                    duplication_list.append([product_id, color])
-                    result.append(
-                        {
-                            "koreanName"    : korean_name,
-                            "price"         : price,
-                            "color"         : color,
-                            "thumbnailImage": thumbnail_image,
-                            "id"            : product_id
-                        }
-                    )
-                    count += 1
-                    if count >= limit+offset:
-                        break
+            products = Product.objects\
+                              .annotate(max_price=Max('productoption__price'))\
+                              .filter(q)\
+                              .order_by(sort_set[sort])
 
-            return JsonResponse({"result":result}, status=200)
+            data = [{
+                    "productName"    : product.korean_name,
+                    "price"          : product.max_price,
+                    "centerColor"    : product.productoption_set.first().color.color,
+                    "thumbnailImage" : product.thumbnail_image,
+                    "id"             : product.id
+                }for product in products[offset:offset+limit]]
+            
+            return JsonResponse({"result":data}, status=200)
 
         except ValueError as e:
             return JsonResponse({"message":"limit or offset is not number"}, status=404)
