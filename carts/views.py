@@ -23,7 +23,7 @@ class CartListView(View):
                 "productName"   :cart.product_option.product.korean_name,
                 "centeColor"    :cart.product_option.color.color,
                 "size"          :cart.product_option.size.name,
-                "price"         :cart.product_option.price,
+                "price"         :int(cart.product_option.price),
                 "quantity"      :cart.quantity,
                 }for cart in carts]
 

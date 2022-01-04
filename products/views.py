@@ -43,7 +43,7 @@ class ProductDetailView(View):
                 "material"   : material,
                 "centerSize" : sizes_stocks,
                 "centerColor": colors,
-                "price"      : price,
+                "price"      : int(price),
             }
             
             return JsonResponse({"result":result}, status=200)
@@ -99,7 +99,7 @@ class ProductListView(View):
 
             data = [{
                     "productName"    : product.korean_name,
-                    "price"          : product.max_price,
+                    "price"          : int(product.max_price),
                     "centerColor"    : product.productoption_set.first().color.color,
                     "thumbnailImage" : product.thumbnail_image,
                     "id"             : product.id
