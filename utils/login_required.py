@@ -24,8 +24,11 @@ def login_required(func):
         except jwt.exceptions.DecodeError:
             return JsonResponse({'message':"InvalidToken"}, status=400)
 
+        except jwt.exceptions.DecodeError:
+            return JsonResponse({'message':"WrongToken"}, status=400)
+
         except jwt.ExpiredSignatureError:
-            return JsonResponse({'message':'TOKEN_EXPIRED'}, status=400)
+            return JsonResponse({'message':'TokenExpired'}, status=400)
 
         except User.DoesNotExist:
             return JsonResponse({'message':'UserDoesNotExist'}, status=400)

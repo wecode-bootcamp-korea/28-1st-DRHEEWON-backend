@@ -26,4 +26,4 @@ class OrderItem(TimeStampModel):
     order          = models.ForeignKey(Order, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = "order_itmes"
+        db_table = "order_items"
