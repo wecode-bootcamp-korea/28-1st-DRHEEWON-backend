@@ -26,21 +26,27 @@ class SignInView(View):
             valid_password = user.password.encode('utf-8')
 
             if not bcrypt.checkpw(password, valid_password):
-                return JsonResponse({'message':'INVALID_USER'}, status=401)
+                return JsonResponse({'message':'INVALID_USER','status':401}, status=401)
 
-            exp_date     = datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+            exp_date     = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
             access_token = jwt.encode(
                     {'id':user.id, 'exp':exp_date},
                     settings.SECRET_KEY,
                     algorithm=settings.ALGORITHM,
             )
-            return JsonResponse({'message':'success','token':access_token}, status=200)
+            message = {
+                'message' : 'success',
+                'status'  : 200,
+                'token'   : access_token,
+                'username': username
+            }
+            return JsonResponse(message, status=200)
 
         except KeyError as e:
             return JsonResponse({'message':getattr(e,'message',str(e))}, status=400)
 
         except User.DoesNotExist:
-            return JsonResponse({'message':'INVALID_USER'}, status=401)
+            return JsonResponse({'message':'INVALID_USER','status':401}, status=401)
             
 class SignUpView(View):
     def post(self, request):
@@ -70,3 +76,14 @@ class SignUpView(View):
             return JsonResponse({'message' : 'SUCCESS'}, status=201)
         except KeyError:
             return JsonResponse({'message' : 'KeyError'}, status=400)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            user_id = resquest.GET['user-id']
+
+            if User.objects.filter(user_id=user_id).exists():
+                return JsonResponse({'message':'UserExists'}, status=400)
+
+            return JsonResponse({'message':'UserDoesNotExists'}, status=200)
+        except KeyError:
+            return JsonResponse({'message':'KeyError'}, status=401)

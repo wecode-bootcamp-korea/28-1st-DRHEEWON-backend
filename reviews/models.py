@@ -10,6 +10,6 @@ class Review(models.Model):
     size_information     = models.DecimalField(max_digits=5, decimal_places=1)
     color_information    = models.DecimalField(max_digits=5, decimal_places=1)
     quantity_information = models.DecimalField(max_digits=5, decimal_places=1)
-
+    comment              = models.TextField(null=True)
     class Meta:
         db_table = "review"

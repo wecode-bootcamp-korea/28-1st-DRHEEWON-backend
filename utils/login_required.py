@@ -8,7 +8,7 @@ SECRET_KEY = settings.SECRET_KEY
 ALGORITHM  = settings.ALGORITHM
 
 
-def login_check(func):
+def login_required(func):
     def wrapper(self, request, *args, **kwargs):
         try:
             access_token = request.headers.get("Authorization", None)
