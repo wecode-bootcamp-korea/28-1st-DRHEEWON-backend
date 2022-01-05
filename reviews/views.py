@@ -40,15 +40,11 @@ class ReviewStatView(View):
             num_male   = reviews.filter(user__gender=1).count()
             num_female = reviews.filter(user__gender=2).count() 
             
-            result={ 
-                "generationInformation":[{
+            result=[{
                     "id"      : i+1,
                     "age"     : str(i+1)+"0대",
                     "percent" : round(num_people_generation[i]/num_reviews*100)
-                }for i in range(5)],
-                "male"   : round(num_male/num_reviews*100),
-                "female" : round(num_female/num_reviews*100),
-            }
+                }for i in range(5)]
 
             return JsonResponse({"result":result}, status=200)
 
