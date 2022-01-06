@@ -60,7 +60,7 @@ class ProductListView(View):
     def get(self, request, *args, **kwargs):
         try:
             category    = request.GET.get("category", None)
-            subcategory = request.GET.get("subcatagory",None)
+            subcategory = request.GET.get("subcategory",None)
             min_price   = request.GET.get("min_price", 10000)
             max_price   = request.GET.get("max_price", 500000)
             colors      = request.GET.get("colors", None)
@@ -75,7 +75,6 @@ class ProductListView(View):
 
             if(category):
                 q &= Q(productoption__subcategory__category__name=category)
-
             if(subcategory):
                 q &= Q(productoption__subcategory__name=subcategory)
 
@@ -104,7 +103,8 @@ class ProductListView(View):
                     "price"          : int(product.max_price),
                     "centerColor"    : product.productoption_set.first().color.color,
                     "thumbnailImage" : product.thumbnail_image,
-                    "id"             : product.id
+                    "id"             : product.id,
+                    "subcategory"    : product.productoption_set.first().subcategory.name
                 }for product in products[offset:offset+limit]]
             
             return JsonResponse({"result":data}, status=200)
