@@ -112,7 +112,7 @@ class ProductCartView(View):
             required_keys = ["cart-id"]
             CheckItem.check_keys_in_body(data, required_keys)
 
-            cart_id = data["cart-id"]
+            cart_id = data["cart-id"].split(",")
             Cart.objects.filter(id__in=cart_id, user=user).delete()
 
             return JsonResponse({"result":"success"}, status=200)
