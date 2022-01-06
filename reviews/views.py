@@ -16,7 +16,7 @@ class ReviewStatView(View):
 
             today = timezone.now()
             korea_tz = zoneinfo.ZoneInfo("Asia/Seoul")
-            #print(timezone.now().year)
+
             base_year_for_gen = [
                 datetime.datetime(today.year-(i*10+9), 1, 1, tzinfo=korea_tz)
                 for i in range(1,5)
