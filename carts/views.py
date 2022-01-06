@@ -82,7 +82,7 @@ class ProductCartView(View):
             cart_id  = data["cart_id"]
             quantity = int(data["quantity"])
 
-            cart = Cart.objects.get(id=cart_id)
+            cart = Cart.objects.get(id=cart_id, user=user)
 
             if cart.product_option.stock < quantity:
                 return(JsonResponse({"message":"InsufficientQuantity"}, status=400))
