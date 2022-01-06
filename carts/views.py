@@ -39,10 +39,10 @@ class ProductCartView(View):
             data = json.loads(request.body)
             user = request.user
 
-            required_keys = ["product_id", "quantity", "size", ]
+            required_keys = ["productId", "quantity", "size", ]
             CheckItem.check_keys_in_body(data, required_keys)
 
-            product_id  = data.get("product_id")
+            product_id  = data.get("productId")
             quantity    = int(data.get("quantity"))
             size        = data.get("size")
             category    = data.get("category", "남자")
@@ -72,6 +72,8 @@ class ProductCartView(View):
         except KeyError as e:
             return JsonResponse({"message":"KeyError"}, status=401)
 
+        except json.decoder.JSONDecodeError as e:
+            return JsonResponse({"message":getattr(e,"message","JsonDecodeError")},status=401)
         except ProductOption.DoesNotExist as e:
             return JsonResponse({"message":getattr(e,"message","ProductOptionDoesNotExists")}, status=404)
 
@@ -81,10 +83,10 @@ class ProductCartView(View):
             data = json.loads(request.body)
             user = request.user 
 
-            required_keys = ["quantity", "cart_id"]
+            required_keys = ["quantity", "cartId"]
             CheckItem.check_keys_in_body(data, required_keys)
 
-            cart_id  = data["cart_id"]
+            cart_id  = data["cartId"]
             quantity = int(data["quantity"])
 
             cart = Cart.objects.get(id=cart_id, user=user)
@@ -109,10 +111,10 @@ class ProductCartView(View):
             data = request.GET
             user = request.user
             
-            required_keys = ["cart-id"]
+            required_keys = ["cartId"]
             CheckItem.check_keys_in_body(data, required_keys)
 
-            cart_id = data["cart-id"].split(",")
+            cart_id = data["cartId"].split(",")
             Cart.objects.filter(id__in=cart_id, user=user).delete()
 
             return JsonResponse({"result":"success"}, status=200)
