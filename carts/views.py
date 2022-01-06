@@ -14,8 +14,7 @@ class ProductCartView(View):
     @login_required
     def get(self, request, *args, **kwargs):
         try:
-            user = request.user
-            
+            user  = request.user
             carts = Cart.objects.filter(user=user)
             
             result = [{
@@ -27,7 +26,7 @@ class ProductCartView(View):
                 "quantity"      : cart.quantity,
                 "id"            : cart.id,
                 "isChecked"     : False
-                }for cart in carts]
+            }for cart in carts]
 
             return JsonResponse({"result":result}, status=200)
 
@@ -53,6 +52,7 @@ class ProductCartView(View):
                 size__name                  =size,
                 subcategory__category__name = category
             )
+
             if product_option.stock < quantity:
                 return(JsonResponse({"message":"InsufficientQuantity"}, status=400))
 
@@ -60,6 +60,7 @@ class ProductCartView(View):
                     user          =user, 
                     product_option=product_option,
             )
+
             if created:
                 cart.quantity = quantity
             else:
@@ -67,8 +68,12 @@ class ProductCartView(View):
             cart.save()
 
             return JsonResponse({"message":"success"}, status=201)
+
         except KeyError as e:
             return JsonResponse({"message":"KeyError"}, status=401)
+
+        except ProductOption.DoesNotExist as e:
+            return JsonResponse({"message":getattr(e,"message","ProductOptionDoesNotExists")}, status=404)
 
     @login_required
     def patch(self, request, *args, **kwargs):
@@ -101,9 +106,9 @@ class ProductCartView(View):
     @login_required
     def delete(self, request, *args, **kwargs):
         try: 
-            data = json.loads(request.body)
+            data = request.GET
             user = request.user
-
+            
             required_keys = ["cart_id"]
             CheckItem.check_keys_in_body(data, required_keys)
 
