@@ -23,7 +23,7 @@ class ProductCartView(View):
                 "centeColor"    : cart.product_option.color.color,
                 "size"          : cart.product_option.size.name,
                 "price"         : int(cart.product_option.price),
-                "quantity"      : cart.quantity,
+                "quantity"      : int(cart.quantity),
                 "id"            : cart.id,
                 "isChecked"     : False
             }for cart in carts]
