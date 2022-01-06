@@ -1,6 +1,7 @@
 import jwt
 
 from django.conf import settings
+from django.http import JsonResponse
 
 from users.models import User
 
@@ -20,6 +21,8 @@ def login_required(func):
 
         except KeyError as e:
             return JsonResponse({'message':getattr(e,'message',str(e))}, status=401)
+        except jwt.exceptions.DecodeError:
+            return JsonResponse({'message':"InvalidToken"}, status=400)
 
         except jwt.ExpiredSignatureError:
             return JsonResponse({'message':'TOKEN_EXPIRED'}, status=400)

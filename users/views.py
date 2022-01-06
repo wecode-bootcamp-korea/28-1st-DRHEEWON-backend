@@ -38,7 +38,7 @@ class SignInView(View):
                 'message' : 'success',
                 'status'  : 200,
                 'token'   : access_token,
-                'username': username
+                'username': user.username
             }
             return JsonResponse(message, status=200)
 

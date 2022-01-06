@@ -13,24 +13,26 @@ from products.models        import (Product,
 class ProductDetailView(View):
     def get(self, request, *args, **kwargs):
         try:
+            category          = request.GET.get("category", "남자")
+            color             = request.GET.get("color", "black")
             product           = Product.objects.get(id=kwargs["product_id"])
             product_name      = product.korean_name
             product_id        = product.id
             material          = product.material
             country_of_origin = product.country_of_origin
 
-            product_options   = product.productoption_set.all()
+            product_options   = product.productoption_set.filter(subcategory__category__name=category)
             product_images    = product.productimage_set.all()
             price             = product_options[0].price
     
-            color_query_set = product_options.values_list("color__color").distinct()
-            colors          = [color for color in color_query_set]
+            color_query_set = product_options.values("color__color").distinct()
+            colors          = [color["color__color"] for color in color_query_set]
 
             sizes_stocks = [
                 {
                     "size"    : product_option.size.name,
                     "quantity": product_option.stock
-                }for product_option in product_options
+                }for product_option in product_options.filter(color__color=color)
             ]
              
             img_urls = [product_image.url for product_image in product_images]
