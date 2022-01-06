@@ -24,7 +24,7 @@ class ProductCartView(View):
                 "size"          : cart.product_option.size.name,
                 "price"         : int(cart.product_option.price),
                 "quantity"      : int(cart.quantity),
-                "id"            : cart.id,
+                "cartId"        : cart.id,
                 "isChecked"     : False
             }for cart in carts]
 

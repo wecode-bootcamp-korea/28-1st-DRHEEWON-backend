@@ -105,7 +105,7 @@ class ProductListView(View):
                     "centerColor"    : product.productoption_set.first().color.color,
                     "thumbnailImage" : product.thumbnail_image,
                     "id"             : product.id,
-                    "subcategory"    : product.productoption_set.first().subcategory.cateogory.name
+                    "subcategory"    : product.productoption_set.first().subcategory.name
                 }for product in products[offset:offset+limit]]
             
             return JsonResponse({"result":data}, status=200)
