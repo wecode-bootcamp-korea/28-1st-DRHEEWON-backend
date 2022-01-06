@@ -7,7 +7,7 @@ from dr_martens.time_stamp_model import TimeStampModel
 class Cart(TimeStampModel):
     user            = models.ForeignKey(User, on_delete=models.CASCADE)
     product_option  = models.ForeignKey(ProductOption, on_delete=models.CASCADE)
-    quantity        = models.IntegerField()
+    quantity        = models.IntegerField(null=True)
 
     class Meta:
         db_table = "carts"
