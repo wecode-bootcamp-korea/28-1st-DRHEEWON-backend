@@ -12,3 +12,11 @@
 - slack
 - Github
 - Trello
+
+## 사용기술
+- Django Framework를 사용하여 웹서버 구축 및 API 개발
+- MySQL을 사용하여 데이터베이스 구축
+- Bcrypt 및 JWT를 사용하여 인증/인가 구현
+- AWS(EC2, RDS)를 사용하여 배포
+
+## 구현 기능
